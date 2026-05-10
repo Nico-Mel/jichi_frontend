@@ -1,0 +1,679 @@
+<!-- ═══════════════════════════════════════════
+     NAVBAR — fixed, bg-jichi-base
+     ═══════════════════════════════════════════ -->
+<nav class="fixed top-0 inset-x-0 z-50 bg-jichi-base transition-all duration-300"
+     [class.shadow-md]="navScrolled()"
+     [class.border-b]="navScrolled()"
+     [class.border-jichi-gray]="navScrolled()">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <button class="flex items-center gap-2.5 group" (click)="scrollTo('hero')">
+      <svg class="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="16" fill="#84CC16"/>
+        <path d="M20 10v11c0 3.5-2.5 5.5-5.5 5.5S9 23.5 9 21" stroke="#262626" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="20" cy="8" r="2.5" fill="#262626"/>
+      </svg>
+      <span class="text-xl font-bold text-jichi-dark tracking-tight group-hover:text-jichi-accent transition-colors duration-200">
+        jichi
+      </span>
+    </button>
+
+    <!-- Nav links (desktop) -->
+    <div class="hidden md:flex items-center gap-8">
+      <button (click)="scrollTo('nosotros')"
+              class="text-sm font-medium text-jichi-muted hover:text-jichi-dark transition-colors duration-200">
+        Nosotros
+      </button>
+      <button (click)="scrollTo('compromiso')"
+              class="text-sm font-medium text-jichi-muted hover:text-jichi-dark transition-colors duration-200">
+        Compromiso
+      </button>
+      <button (click)="scrollTo('trazabilidad')"
+              class="text-sm font-medium text-jichi-muted hover:text-jichi-dark transition-colors duration-200">
+        Trazabilidad
+      </button>
+    </div>
+
+    <!-- CTA -->
+    <a routerLink="/auth"
+       class="bg-jichi-dark text-jichi-base px-5 py-2 rounded-full text-sm font-semibold
+              hover:bg-jichi-accent hover:text-jichi-dark transition-all duration-200">
+      Iniciar Sesión
+    </a>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════
+     MAIN
+     ═══════════════════════════════════════════ -->
+<main class="pt-16">
+
+  <!-- ─── HERO (Carrusel a pantalla completa) ─── -->
+  <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+    <!-- Carousel slides -->
+    @for (slide of slides; track slide.url; let i = $index) {
+      <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+           [class]="currentSlide() === i ? 'opacity-100' : 'opacity-0'">
+        <img [src]="slide.url" [alt]="slide.alt"
+             class="w-full h-full object-cover"/>
+        <div class="absolute inset-0 bg-black/55"></div>
+      </div>
+    }
+
+    <!-- Hero content — pt-32 pb-48 ensures clearance above dots on all screens -->
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto
+                pt-35 pb-48 md:pt-0 md:pb-56 flex flex-col justify-center h-full">
+
+      <!-- Status pill -->
+
+      <!-- Headline -->
+      <h1 class="animate-fade-up-delay-1 mt-15
+                 text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6">
+        Por una Santa Cruz<br/>
+        <span class="text-jichi-accent">Inteligente</span><br/>
+        y Sostenible
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="animate-fade-up-delay-2
+                text-lg md:text-xl text-white/75 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+        Únete a la red ciudadana. Tu reporte rápido ayuda a mantener nuestras calles limpias
+        y a optimizar las rutas de recolección ecológica.
+      </p>
+
+      <!-- CTAs -->
+      <div class="animate-fade-up-delay-3 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button (click)="openModal()"
+                class="bg-jichi-accent text-jichi-dark px-8 py-3.5 rounded-full font-semibold text-sm
+                       hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+          Reportar Incidencia
+        </button>
+        <button (click)="scrollTo('nosotros')"
+                class="text-white border border-white/30 px-8 py-3.5 rounded-full font-semibold text-sm
+                       hover:bg-white/10 hover:border-white/50 transition-all duration-200">
+          Conocer el Proyecto →
+        </button>
+      </div>
+    </div>
+
+    <!-- Carousel navigation dots -->
+    <div class="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+      @for (slide of slides; track slide.url; let i = $index) {
+        <button (click)="goToSlide(i)"
+                class="h-2 rounded-full bg-white transition-all duration-300 hover:opacity-80"
+                [class]="currentSlide() === i ? 'w-7 opacity-100' : 'w-2 opacity-40'">
+        </button>
+      }
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 animate-bounce opacity-40 z-20">
+      <span class="text-white text-[10px] font-medium tracking-widest uppercase">Desplaza</span>
+      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </div>
+  </section>
+
+
+  <!-- ─── NOSOTROS ──────────────────────────── -->
+  <section id="nosotros" class="py-28 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+        <!-- Left: Text + pillars -->
+        <div>
+          <p class="text-jichi-accent text-xs font-bold uppercase tracking-widest mb-3">Quiénes Somos</p>
+          <h2 class="text-4xl md:text-5xl font-bold text-jichi-dark leading-tight mb-4">
+            Tecnología al<br/>servicio de<br/>tu ciudad
+          </h2>
+          <p class="text-jichi-muted text-base leading-relaxed mb-12 max-w-md">
+            Somos un equipo de la UAGRM comprometido en construir soluciones de datos
+            reales para los desafíos reales de Santa Cruz de la Sierra.
+          </p>
+
+          <!-- Pilar 1 -->
+          <div class="flex gap-5 mb-9">
+            <div class="flex-shrink-0">
+              <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="18" r="8" fill="#84CC16" stroke="#262626" stroke-width="2"/>
+                <circle cx="7"  cy="40" r="5" fill="#F9FAF7" stroke="#262626" stroke-width="2"/>
+                <circle cx="41" cy="40" r="5" fill="#F9FAF7" stroke="#262626" stroke-width="2"/>
+                <line x1="24" y1="26" x2="7"  y2="35" stroke="#262626" stroke-width="1.5" stroke-dasharray="3 2"/>
+                <line x1="24" y1="26" x2="41" y2="35" stroke="#262626" stroke-width="1.5" stroke-dasharray="3 2"/>
+                <circle cx="24" cy="18" r="3" fill="#262626"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-jichi-dark font-bold text-base mb-1.5">Prevención en cada barrio</h3>
+              <p class="text-jichi-muted text-sm leading-relaxed">
+                Identificamos qué zonas necesitan más atención para mantener
+                tus calles siempre limpias y seguras.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pilar 2 -->
+          <div class="flex gap-5 mb-9">
+            <div class="flex-shrink-0">
+              <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5"  y="28" width="9" height="14" rx="2" fill="#E5E5E5" stroke="#262626" stroke-width="1.5"/>
+                <rect x="18" y="20" width="9" height="22" rx="2" fill="#E5E5E5" stroke="#262626" stroke-width="1.5"/>
+                <rect x="31" y="11" width="9" height="31" rx="2" fill="#84CC16" stroke="#262626" stroke-width="1.5"/>
+                <polyline points="6,30 19,22 32,13 42,7" stroke="#262626" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <circle cx="42" cy="7" r="3.5" fill="#84CC16" stroke="#262626" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-jichi-dark font-bold text-base mb-1.5">Anticipando el cuidado de la ciudad</h3>
+              <p class="text-jichi-muted text-sm leading-relaxed">
+                Nuestra tecnología nos permite organizarnos con días de anticipación,
+                evitando la acumulación de residuos y focos de infección.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pilar 3 -->
+          <div class="flex gap-5">
+            <div class="flex-shrink-0">
+              <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 5C16 5 13 12 13 19v9L9 32v2h30v-2l-4-4v-9C35 12 32 5 24 5z"
+                      fill="#84CC16" stroke="#262626" stroke-width="2"/>
+                <path d="M19 34c0 2.76 2.24 5 5 5s5-2.24 5-5"
+                      stroke="#262626" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="37" cy="11" r="7" fill="#262626"/>
+                <polyline points="33.5,11 36.5,14 41,8.5"
+                          stroke="#84CC16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-jichi-dark font-bold text-base mb-1.5">Participación Ciudadana Activa</h3>
+              <p class="text-jichi-muted text-sm leading-relaxed">
+                Cualquier vecino puede reportar incidencias en tiempo real. Cada alerta
+                alimenta nuestro sistema y mejora la ruta del próximo camión.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Image -->
+        <div class="relative">
+          <div class="absolute -bottom-6 -left-6 w-36 h-36 bg-jichi-accent rounded-3xl -z-10"></div>
+          <div class="absolute -top-6 -right-6 w-24 h-24 bg-jichi-gray rounded-3xl -z-10"></div>
+          <div class="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80"
+                 alt="Equipo Jichi"
+                 class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-jichi-dark/40 to-transparent"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── COMPROMISO (Parallax) ───────────────── -->
+  <section id="compromiso"
+           class="relative bg-fixed bg-center bg-cover bg-no-repeat py-36 px-6"
+           style="background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80')">
+
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-black/62 pointer-events-none"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-5xl mx-auto text-center">
+
+      <!-- Eyebrow -->
+      <p class="text-jichi-accent text-xs font-bold uppercase tracking-[0.2em] mb-5">
+        Nuestro Compromiso
+      </p>
+
+      <!-- Headline -->
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] mb-5">
+        ¿Cómo hemos favorecido<br class="hidden md:block"/>
+        la sostenibilidad este año?
+      </h2>
+
+      <!-- Separator -->
+      <div class="w-16 h-0.5 bg-jichi-accent mx-auto mb-16"></div>
+
+      <!-- KPI grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden shadow-2xl">
+
+        <!-- Toneladas -->
+        <div class="bg-white/5 backdrop-blur-sm px-10 py-12 text-center">
+          <div class="text-6xl lg:text-7xl font-bold text-white tabular-nums leading-none mb-3">
+            {{ kpiToneladas() | number:'1.0-0' }}
+          </div>
+          <div class="text-jichi-accent text-xs font-bold uppercase tracking-widest mb-1">
+            Toneladas Gestionadas
+          </div>
+          <p class="text-white/45 text-xs leading-relaxed">
+            del mes en curso
+          </p>
+        </div>
+
+        <!-- Zonas -->
+        <div class="bg-white/5 backdrop-blur-sm px-10 py-12 text-center border-y md:border-y-0 md:border-x border-white/10">
+          <div class="text-6xl lg:text-7xl font-bold text-white tabular-nums leading-none mb-3">
+            {{ kpiZonas() | number:'1.0-0' }}
+          </div>
+          <div class="text-jichi-accent text-xs font-bold uppercase tracking-widest mb-1">
+            Puntos de Recolección
+          </div>
+          <p class="text-white/45 text-xs leading-relaxed">
+            monitoreados en la ciudad
+          </p>
+        </div>
+
+        <!-- Camiones -->
+        <div class="bg-white/5 backdrop-blur-sm px-10 py-12 text-center">
+          <div class="text-6xl lg:text-7xl font-bold text-white tabular-nums leading-none mb-3">
+            {{ kpiCamiones() }}
+          </div>
+          <div class="text-jichi-accent text-xs font-bold uppercase tracking-widest mb-1">
+            Camiones Optimizados
+          </div>
+          <p class="text-white/45 text-xs leading-relaxed">
+            en ruta activa
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Footnote -->
+      <p class="text-white/35 text-sm mt-12 leading-relaxed max-w-xl mx-auto">
+        Cada ruta optimizada significa menos emisiones. Cada alerta procesada, un barrio más limpio.
+        Jichi transforma datos en acción ambiental.
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- ─── TRAZABILIDAD (Editorial Overlap) ─────── -->
+  <section id="trazabilidad" class="pt-28 pb-40 px-6">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Mobile heading (stacks above image on small screens) -->
+      <div class="mb-10 md:hidden">
+        <p class="text-jichi-accent text-xs font-bold uppercase tracking-widest mb-3">Trazabilidad Total</p>
+        <h2 class="text-3xl font-bold text-jichi-dark leading-tight">
+          Inteligencia que trabaja<br/>por tu ciudad
+        </h2>
+      </div>
+
+      <!-- Image + overlap container -->
+      <div class="relative">
+
+        <!-- Full-width image -->
+        <div class="h-[400px] md:h-[520px] lg:h-[620px] overflow-hidden rounded-2xl lg:rounded-3xl">
+          <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=1920&q=80"
+               alt="Vista aérea ciudad sostenible"
+               class="w-full h-full object-cover"/>
+          <!-- Left-to-center gradient for title legibility on desktop -->
+          <div class="absolute inset-0 bg-gradient-to-r from-jichi-dark/70 via-jichi-dark/30 to-transparent
+                      rounded-2xl lg:rounded-3xl"></div>
+        </div>
+
+        <!-- Desktop title — overlaid on left of image -->
+        <div class="absolute left-10 lg:left-16 top-1/2 -translate-y-1/2 max-w-xs hidden md:block">
+          <p class="text-jichi-accent text-[10px] font-bold uppercase tracking-[0.25em] mb-5">
+            Trazabilidad Total
+          </p>
+          <h2 class="text-4xl lg:text-5xl font-bold text-white leading-[1.08]">
+            Inteligencia<br/>que trabaja<br/>por tu ciudad
+          </h2>
+        </div>
+
+        <!-- Desktop white card — overlaps right side, extends below image -->
+        <div class="hidden md:block absolute right-10 lg:right-14 bottom-0 translate-y-[30%]
+                    bg-white rounded-xl shadow-2xl w-[340px] lg:w-[400px] z-10">
+          <div class="p-10 lg:p-12">
+            <div class="space-y-4 text-jichi-muted text-sm leading-relaxed mb-8">
+              <p>
+                Cada contenedor tiene una historia. Nuestro sistema registra niveles de llenado,
+                frecuencia de desborde y el riesgo de cada zona mediante monitoreo continuo
+                en tiempo real.
+              </p>
+              <p>
+                Los tomadores de decisión acceden a un panel unificado que convierte datos
+                en acción: saben qué zona necesita atención urgente antes de que los vecinos llamen.
+              </p>
+            </div>
+            <div class="border-t border-jichi-gray/50 pt-5">
+              <p class="text-[11px] font-bold text-jichi-muted tracking-widest uppercase leading-relaxed">
+                Smart City
+                <span class="mx-2 text-jichi-accent font-black">·</span>
+                Sostenibilidad
+                <span class="mx-2 text-jichi-accent font-black">·</span>
+                Participación
+                <span class="mx-2 text-jichi-accent font-black">·</span>
+                Reciclaje
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile card (below image, hidden md+) -->
+      <div class="md:hidden mt-8 bg-white rounded-xl shadow-sm border border-jichi-gray/30 p-8">
+        <div class="space-y-4 text-jichi-muted text-sm leading-relaxed mb-8">
+          <p>
+            Cada contenedor tiene una historia. Nuestro sistema registra niveles de llenado,
+            frecuencia de desborde y el riesgo de cada zona mediante monitoreo continuo
+            en tiempo real.
+          </p>
+          <p>
+            Los tomadores de decisión acceden a un panel unificado que convierte datos
+            en acción: saben qué zona necesita atención urgente antes de que los vecinos llamen.
+          </p>
+        </div>
+        <div class="border-t border-jichi-gray/50 pt-5">
+          <p class="text-[11px] font-bold text-jichi-muted tracking-widest uppercase">
+            Smart City
+            <span class="mx-2 text-jichi-accent font-black">·</span>
+            Sostenibilidad
+            <span class="mx-2 text-jichi-accent font-black">·</span>
+            Participación
+            <span class="mx-2 text-jichi-accent font-black">·</span>
+            Reciclaje
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ─── FOOTER ────────────────────────────── -->
+  <footer class="bg-jichi-dark text-white">
+    <div class="max-w-7xl mx-auto px-6 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+
+        <!-- Brand -->
+        <div class="lg:col-span-2">
+          <div class="flex items-center gap-3 mb-4">
+            <svg class="w-8 h-8" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="16" fill="#84CC16"/>
+              <path d="M20 10v11c0 3.5-2.5 5.5-5.5 5.5S9 23.5 9 21"
+                    stroke="#262626" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="20" cy="8" r="2.5" fill="#262626"/>
+            </svg>
+            <span class="text-xl font-bold tracking-tight">jichi</span>
+          </div>
+          <p class="text-white/45 text-sm leading-relaxed max-w-xs mb-4">
+            Sistema de Soporte a Decisiones para la gestión de residuos sólidos urbanos
+            en Santa Cruz de la Sierra, Bolivia.
+          </p>
+          <p class="text-white/30 text-xs leading-relaxed">
+            Desarrollado por estudiantes de la<br/>
+            <span class="text-white/50 font-medium">Facultad de Ingenieria en Ciencias de la Computacion Redes y Telecomunicaciones — UAGRM</span>
+          </p>
+        </div>
+
+        <!-- Navegación -->
+        <div>
+          <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-5">Navegación</h4>
+          <ul class="space-y-3 text-sm">
+            <li>
+              <button (click)="scrollTo('nosotros')"
+                      class="text-white/45 hover:text-jichi-accent transition-colors duration-150">
+                Nosotros
+              </button>
+            </li>
+            <li>
+              <button (click)="scrollTo('compromiso')"
+                      class="text-white/45 hover:text-jichi-accent transition-colors duration-150">
+                Compromiso
+              </button>
+            </li>
+            <li>
+              <button (click)="scrollTo('trazabilidad')"
+                      class="text-white/45 hover:text-jichi-accent transition-colors duration-150">
+                Trazabilidad
+              </button>
+            </li>
+            <li>
+              <button (click)="openModal()"
+                      class="text-white/45 hover:text-jichi-accent transition-colors duration-150">
+                Reportar Incidencia
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contacto -->
+        <div>
+          <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-5">Contacto</h4>
+          <ul class="space-y-4 text-sm text-white/45">
+            <li class="flex items-start gap-2.5">
+              <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-jichi-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span>Santa Cruz de la Sierra,<br/>Bolivia</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-jichi-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span>nnmm&#64;uagrm.edu.bo</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="mt-14 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-white/25 text-xs">© 2026 Jichi — Todos los derechos reservados.</p>
+        <p class="text-white/25 text-xs">Primer Parcial · UAGRM</p>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+
+<!-- ═══════════════════════════════════════════
+     FAB — Botón flotante de alerta
+     ═══════════════════════════════════════════ -->
+<button (click)="openModal()"
+        aria-label="Reportar incidencia"
+        class="fixed bottom-8 right-8 z-40
+               w-14 h-14 bg-jichi-accent text-jichi-dark rounded-full
+               shadow-lg flex items-center justify-center
+               hover:scale-110 hover:shadow-xl hover:bg-white
+               transition-all duration-200">
+  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+  </svg>
+</button>
+
+
+<!-- ═══════════════════════════════════════════
+     MODAL — Formulario de Alerta
+     ═══════════════════════════════════════════ -->
+@if (modalOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+       (click)="closeModal()">
+
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-jichi-dark/70 backdrop-blur-sm"></div>
+
+    <!-- Card -->
+    <div class="relative bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden"
+         (click)="$event.stopPropagation()">
+
+      <!-- Card header (lime) -->
+      <div class="bg-jichi-accent px-8 pt-8 pb-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="text-jichi-dark text-xl font-bold">Reportar Incidencia</h3>
+            <p class="text-jichi-dark/55 text-sm mt-1">
+              Tu reporte ayuda a mejorar Santa Cruz
+            </p>
+          </div>
+          <button (click)="closeModal()"
+                  class="text-jichi-dark/50 hover:text-jichi-dark p-1.5 rounded-full
+                         hover:bg-jichi-dark/10 transition-colors duration-150">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card body -->
+      <div class="px-8 py-7">
+
+        @if (!formSubmitted()) {
+
+          <form [formGroup]="alertaForm" (ngSubmit)="submitAlerta()" class="space-y-5" novalidate>
+
+            <!-- Zona / Barrio -->
+            <div>
+              <label class="block text-jichi-dark text-sm font-semibold mb-2">
+                Zona o Barrio <span class="text-red-400">*</span>
+              </label>
+              <input formControlName="zona_barrio"
+                     type="text"
+                     placeholder="Ej: Plan 3000, Pampa de la Isla..."
+                     class="w-full px-4 py-3 rounded-xl border bg-jichi-base/50
+                            text-jichi-dark placeholder:text-jichi-muted text-sm
+                            focus:outline-none focus:ring-2 focus:ring-jichi-accent focus:border-transparent
+                            transition-all duration-200"
+                     [class.border-jichi-gray]="!(alertaForm.get('zona_barrio')?.invalid && alertaForm.get('zona_barrio')?.touched)"
+                     [class.border-red-300]="alertaForm.get('zona_barrio')?.invalid && alertaForm.get('zona_barrio')?.touched"/>
+              @if (alertaForm.get('zona_barrio')?.invalid && alertaForm.get('zona_barrio')?.touched) {
+                <p class="text-red-400 text-xs mt-1.5">Este campo es obligatorio.</p>
+              }
+            </div>
+
+            <!-- Tipo de problema -->
+            <div>
+              <label class="block text-jichi-dark text-sm font-semibold mb-2">
+                Tipo de Problema <span class="text-red-400">*</span>
+              </label>
+              <select formControlName="tipo_problema"
+                      class="w-full px-4 py-3 rounded-xl border bg-jichi-base/50
+                             text-jichi-dark text-sm appearance-none cursor-pointer
+                             focus:outline-none focus:ring-2 focus:ring-jichi-accent focus:border-transparent
+                             transition-all duration-200"
+                      [class.border-jichi-gray]="!(alertaForm.get('tipo_problema')?.invalid && alertaForm.get('tipo_problema')?.touched)"
+                      [class.border-red-300]="alertaForm.get('tipo_problema')?.invalid && alertaForm.get('tipo_problema')?.touched">
+                <option value="" disabled>Selecciona el tipo de problema</option>
+                @for (tipo of tiposProblema; track tipo) {
+                  <option [value]="tipo">{{ tipo }}</option>
+                }
+              </select>
+              @if (alertaForm.get('tipo_problema')?.invalid && alertaForm.get('tipo_problema')?.touched) {
+                <p class="text-red-400 text-xs mt-1.5">Selecciona un tipo de problema.</p>
+              }
+            </div>
+
+            <!-- ID Contenedor (opcional) -->
+            <div>
+              <label class="block text-jichi-dark text-sm font-semibold mb-2">
+                ID del Contenedor
+                <span class="text-jichi-muted font-normal ml-1">(opcional)</span>
+              </label>
+              <input formControlName="id_contenedor"
+                     type="text"
+                     placeholder="Código visible en el contenedor"
+                     class="w-full px-4 py-3 rounded-xl border border-jichi-gray bg-jichi-base/50
+                            text-jichi-dark placeholder:text-jichi-muted text-sm
+                            focus:outline-none focus:ring-2 focus:ring-jichi-accent focus:border-transparent
+                            transition-all duration-200"/>
+            </div>
+
+            <!-- Foto (solo visual) -->
+            <div>
+              <label class="block text-jichi-dark text-sm font-semibold mb-2">
+                Foto del problema <span class="text-red-400">*</span>
+              </label>
+              <label class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
+                            border border-dashed border-jichi-gray bg-jichi-base/50 cursor-pointer
+                            hover:border-jichi-accent hover:bg-jichi-accent/5 transition-all duration-200">
+                <svg class="w-5 h-5 text-jichi-muted flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+                </svg>
+                <span class="text-sm text-jichi-muted">Adjuntar foto <span class="font-medium text-jichi-dark/50"></span></span>
+                <input type="file" accept="image/*" class="hidden"/>
+              </label>
+            </div>
+
+            <!-- Error banner -->
+            @if (formError()) {
+              <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3
+                          text-red-600 text-sm flex items-center gap-2.5">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ formError() }}
+              </div>
+            }
+
+            <!-- Submit -->
+            <button type="submit"
+                    [disabled]="isSubmitting()"
+                    class="w-full bg-jichi-dark text-jichi-base py-3.5 rounded-xl font-semibold text-sm
+                           hover:bg-jichi-accent hover:text-jichi-dark transition-all duration-200
+                           disabled:opacity-60 disabled:cursor-not-allowed">
+              @if (isSubmitting()) {
+                <span class="flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                            stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  Enviando reporte...
+                </span>
+              } @else {
+                Enviar Reporte
+              }
+            </button>
+
+          </form>
+
+        } @else {
+
+          <!-- ── Estado de éxito ── -->
+          <div class="text-center py-6">
+            <div class="w-16 h-16 bg-jichi-accent/20 rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg class="w-8 h-8 text-jichi-accent" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <h4 class="text-jichi-dark font-bold text-lg mb-2">¡Reporte Enviado!</h4>
+            <p class="text-jichi-muted text-sm leading-relaxed mb-7 max-w-xs mx-auto">
+              Gracias por contribuir a una Santa Cruz más limpia. Tu alerta ha sido
+              registrada y será procesada por nuestro sistema.
+            </p>
+            <button (click)="closeModal()"
+                    class="bg-jichi-accent text-jichi-dark px-8 py-2.5 rounded-full
+                           font-semibold text-sm hover:bg-jichi-dark hover:text-jichi-base
+                           transition-all duration-200">
+              Cerrar
+            </button>
+          </div>
+
+        }
+      </div>
+
+    </div>
+  </div>
+}

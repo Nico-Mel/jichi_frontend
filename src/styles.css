@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+@theme {
+  --color-jichi-base:   #F9FAF7;
+  --color-jichi-dark:   #262626;
+  --color-jichi-accent: #84CC16;
+  --color-jichi-gray:   #E5E5E5;
+  --color-jichi-muted:  #737373;
+  --font-sans: 'Poppins', sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+    background-color: #F9FAF7;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-fade-up-delay-1 { animation: fadeUp 0.8s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade-up-delay-2 { animation: fadeUp 0.8s 0.30s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade-up-delay-3 { animation: fadeUp 0.8s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }

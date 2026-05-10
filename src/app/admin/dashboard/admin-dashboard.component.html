@@ -1,0 +1,272 @@
+<!-- ─── Page Header ──────────────────────────────── -->
+<div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <div>
+    <h1 class="text-xl font-bold text-jichi-dark">Panel de Control Gerencial</h1>
+    <p class="text-jichi-muted text-xs mt-0.5">
+      Resumen ejecutivo · actualización en tiempo real
+    </p>
+  </div>
+
+  <button (click)="runMl()"
+          [disabled]="mlRunning()"
+          class="inline-flex items-center gap-2 bg-jichi-dark text-jichi-base
+                 px-4 py-2 rounded-xl font-semibold text-sm
+                 hover:bg-jichi-accent hover:text-jichi-dark transition-all duration-200
+                 disabled:opacity-60 disabled:cursor-not-allowed self-start sm:self-auto">
+    @if (mlRunning()) {
+      <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+      Ejecutando modelos...
+    } @else {
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
+      </svg>
+      Ejecutar Modelos de IA
+    }
+  </button>
+</div>
+
+<!-- Banners -->
+@if (mlSuccess()) {
+  <div class="bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 mb-4
+              flex items-center gap-2.5 text-green-700 text-sm">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    Modelos ejecutados correctamente. KPIs y gráficos actualizados.
+  </div>
+}
+@if (mlError()) {
+  <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 mb-4
+              flex items-center gap-2.5 text-red-600 text-sm">
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ mlError() }}
+  </div>
+}
+@if (error()) {
+  <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5
+              flex items-center gap-3 text-red-600 text-sm">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ error() }}
+  </div>
+}
+
+
+<!-- ─── KPI Cards ──────────────────────────────── -->
+<div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 mb-5">
+
+  @if (loading()) {
+    @for (i of skeletonItems; track i) {
+      <div class="bg-white rounded-xl p-4 border border-jichi-gray/40 animate-pulse">
+        <div class="flex items-center gap-1.5 mb-2.5">
+          <div class="w-2 h-2 rounded-full bg-jichi-gray"></div>
+          <div class="h-2.5 w-16 bg-jichi-gray rounded"></div>
+        </div>
+        <div class="h-7 w-12 bg-jichi-gray rounded mb-1.5"></div>
+        <div class="h-2.5 w-20 bg-jichi-gray/60 rounded"></div>
+      </div>
+    }
+  } @else if (kpis()) {
+
+    <!-- 1: Alertas Pendientes -->
+    <div class="bg-white rounded-xl p-4 border border-jichi-gray/40 hover:shadow-sm transition-shadow duration-150">
+      <div class="flex items-center gap-1.5 mb-2.5">
+        <span class="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0"></span>
+        <span class="text-[10px] font-bold text-jichi-muted uppercase tracking-widest truncate">Operativo</span>
+      </div>
+      <div class="text-2xl font-bold text-jichi-dark tabular-nums leading-none mb-1">
+        {{ kpis()!.operativo_alertas_pendientes | number }}
+      </div>
+      <p class="text-xs text-jichi-muted">Alertas Pendientes</p>
+    </div>
+
+    <!-- 2: Toneladas del Mes -->
+    <div class="bg-white rounded-xl p-4 border border-jichi-gray/40 hover:shadow-sm transition-shadow duration-150">
+      <div class="flex items-center gap-1.5 mb-2.5">
+        <span class="w-2 h-2 rounded-full bg-jichi-accent flex-shrink-0"></span>
+        <span class="text-[10px] font-bold text-jichi-muted uppercase tracking-widest truncate">Operativo</span>
+      </div>
+      <div class="text-2xl font-bold text-jichi-dark tabular-nums leading-none mb-1">
+        {{ kpis()!.operativo_toneladas_mes_actual | number:'1.0-0' }}
+      </div>
+      <p class="text-xs text-jichi-muted">Toneladas del Mes</p>
+    </div>
+
+    <!-- 3: Puntos Críticos Detectados -->
+    <div class="bg-white rounded-xl p-4 border border-jichi-gray/40 hover:shadow-sm transition-shadow duration-150">
+      <div class="flex items-center gap-1.5 mb-2.5">
+        <span class="w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
+        <span class="text-[10px] font-bold text-jichi-muted uppercase tracking-widest truncate">IA Análisis</span>
+      </div>
+      <div class="text-2xl font-bold text-jichi-dark tabular-nums leading-none mb-1">
+        {{ kpis()!.ml_kmeans_contenedores_criticos | number }}
+      </div>
+      <p class="text-xs text-jichi-muted">Puntos Críticos Detectados</p>
+    </div>
+
+    <!-- 4: Riesgo de Desborde -->
+    <div class="bg-white rounded-xl p-4 border border-red-100 hover:shadow-sm transition-shadow duration-150">
+      <div class="flex items-center gap-1.5 mb-2.5">
+        <span class="w-2 h-2 rounded-full bg-red-600 flex-shrink-0"></span>
+        <span class="text-[10px] font-bold text-red-400 uppercase tracking-widest truncate">Alerta IA</span>
+      </div>
+      <div class="text-2xl font-bold text-red-600 tabular-nums leading-none mb-1">
+        {{ kpis()!.ml_arbol_riesgo_inminente | number }}
+      </div>
+      <p class="text-xs text-jichi-muted">Riesgo de Desborde</p>
+    </div>
+
+    <!-- 5: Estimación de Carga Mensual -->
+    <div class="bg-white rounded-xl p-4 border border-jichi-gray/40 hover:shadow-sm transition-shadow duration-150">
+      <div class="flex items-center gap-1.5 mb-2.5">
+        <span class="w-2 h-2 rounded-full bg-indigo-400 flex-shrink-0"></span>
+        <span class="text-[10px] font-bold text-jichi-muted uppercase tracking-widest truncate">Pronóstico</span>
+      </div>
+      <div class="text-2xl font-bold text-jichi-dark tabular-nums leading-none mb-1">
+        {{ (kpis()!.ml_random_forest_prediccion_toneladas / 12) | number:'1.0-0' }}
+      </div>
+      <p class="text-xs text-jichi-muted">Estimación de Carga Mensual</p>
+    </div>
+
+  }
+</div>
+
+
+<!-- ─── Gráficos Principales ──────────────────── -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+  <!-- ── Tendencia Semanal ──────────────────────── -->
+  <div class="bg-white rounded-2xl border border-jichi-gray/50 p-5">
+
+    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+      <div>
+        <h2 class="text-sm font-bold text-jichi-dark">Tendencia de Recolección Semanal</h2>
+        <p class="text-jichi-muted text-xs mt-0.5">
+          Carga diaria en toneladas — datos reales + pronóstico 7 días
+        </p>
+      </div>
+
+      @if (!loading() && latestProjection !== '—') {
+        <div class="flex items-center gap-2 bg-jichi-accent/10 border border-jichi-accent/25
+                    rounded-lg px-3 py-2 flex-shrink-0 self-start">
+          <svg class="w-3.5 h-3.5 text-jichi-accent flex-shrink-0" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/>
+          </svg>
+          <div>
+            <div class="text-jichi-accent font-bold text-sm tabular-nums leading-none">
+              {{ latestProjection }} t
+            </div>
+            <div class="text-jichi-muted text-[10px] leading-none mt-0.5">Próxima estimación</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Legend -->
+    <div class="flex items-center gap-5 mb-3">
+      <div class="flex items-center gap-1.5 text-xs text-jichi-muted">
+        <span class="inline-block w-6 h-0.5 bg-gray-700 rounded"></span>
+        Recolección Real
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-jichi-muted">
+        <span class="inline-block w-6 h-px border-t-2 border-dashed border-jichi-accent"></span>
+        Proyección IA
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="h-[340px] bg-jichi-gray/20 rounded-xl animate-pulse"></div>
+    } @else {
+      <apx-chart
+        [series]="trendSeries"
+        [chart]="trendChart"
+        [colors]="trendColors"
+        [stroke]="trendStroke"
+        [fill]="trendFill"
+        [xaxis]="trendXAxis"
+        [yaxis]="trendYAxis"
+        [grid]="trendGrid"
+        [legend]="trendLegend"
+        [tooltip]="trendTooltip"
+        [dataLabels]="trendDataLabels"
+      ></apx-chart>
+    }
+  </div>
+
+
+  <!-- ── Cumplimiento de Carga Mensual ─────────── -->
+  <div class="bg-white rounded-2xl border border-jichi-gray/50 p-5 flex flex-col">
+
+    <div class="mb-1">
+      <h2 class="text-sm font-bold text-jichi-dark">Cumplimiento de Carga Mensual Estimada</h2>
+      <p class="text-jichi-muted text-xs mt-0.5">
+        Avance del mes en curso frente a la estimación del modelo IA
+      </p>
+    </div>
+
+    <!-- Gauge -->
+    @if (loading()) {
+      <div class="flex items-center justify-center flex-1 min-h-[240px]">
+        <div class="w-40 h-40 rounded-full border-[20px] border-jichi-gray/20 animate-pulse"></div>
+      </div>
+    } @else {
+      <apx-chart
+        [series]="complianceSeries"
+        [chart]="complianceChart"
+        [colors]="complianceColors"
+        [labels]="complianceLabels"
+        [plotOptions]="compliancePlotOptions"
+      ></apx-chart>
+    }
+
+    <!-- Meta vs Actual numbers -->
+    @if (!loading()) {
+      <div class="mt-auto space-y-3">
+
+        <!-- Actual -->
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-sm bg-jichi-accent flex-shrink-0"></span>
+            <span class="text-xs text-jichi-muted">Recolectado este mes</span>
+          </div>
+          <span class="text-sm font-bold text-jichi-dark tabular-nums">
+            {{ complianceActual | number:'1.0-0' }} t
+          </span>
+        </div>
+
+        <!-- Meta -->
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-sm bg-jichi-gray flex-shrink-0"></span>
+            <span class="text-xs text-jichi-muted">Meta estimada por IA</span>
+          </div>
+          <span class="text-sm font-semibold text-jichi-muted tabular-nums">
+            {{ complianceMeta | number:'1.0-0' }} t
+          </span>
+        </div>
+
+        <!-- Progress track -->
+        <div class="pt-1">
+          <div class="w-full bg-jichi-gray/60 rounded-full h-1.5 overflow-hidden">
+            <div class="bg-jichi-accent h-1.5 rounded-full transition-all duration-1000"
+                 [style.width]="complianceSeries[0] + '%'"></div>
+          </div>
+          <p class="text-[10px] text-jichi-muted mt-1.5 text-right">
+            Datos acumulados del mes en curso
+          </p>
+        </div>
+
+      </div>
+    }
+  </div>
+
+</div>

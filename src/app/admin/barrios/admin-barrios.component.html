@@ -1,0 +1,141 @@
+<!-- ─── Page Header ──────────────────────────────── -->
+<div class="mb-5">
+  <h1 class="text-xl font-bold text-jichi-dark">Análisis por Zonas de Recolección</h1>
+  <p class="text-jichi-muted text-xs mt-0.5">
+    Distribución de la flota e indicadores operativos por barrio
+  </p>
+</div>
+
+@if (error()) {
+  <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5
+              flex items-center gap-3 text-red-600 text-sm">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ error() }}
+  </div>
+}
+
+
+<!-- ─── Gráficos ──────────────────────────────── -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+  <!-- ── Contenedores por Zona ─────────────────── -->
+  <div class="bg-white rounded-2xl border border-jichi-gray/50 p-5">
+
+    <div class="mb-4">
+      <h2 class="text-sm font-bold text-jichi-dark">Nivel de Criticidad por Zona</h2>
+      <p class="text-jichi-muted text-xs mt-0.5">
+        Contenedores críticos detectados por barrio · distribución del modelo K-Means
+      </p>
+    </div>
+
+    @if (loading()) {
+      <div class="h-[260px] bg-jichi-gray/20 rounded-xl animate-pulse"></div>
+    } @else {
+      <apx-chart
+        [series]="barSeries"
+        [chart]="barChart"
+        [colors]="barColors"
+        [plotOptions]="barPlotOptions"
+        [xaxis]="barXAxis"
+        [yaxis]="barYAxis"
+        [dataLabels]="barDataLabels"
+        [grid]="barGrid"
+        [tooltip]="barTooltip"
+      ></apx-chart>
+    }
+
+    <!-- Zone summary pills -->
+    @if (!loading()) {
+      <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 mt-3 pt-3 border-t border-jichi-gray/50">
+        @for (zona of zonas; track zona.nombre) {
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></span>
+            <span class="text-[10px] text-jichi-muted truncate">{{ zona.nombre }}</span>
+            <span class="ml-auto text-[11px] font-bold text-jichi-dark tabular-nums">{{ zona.criticos }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+
+  <!-- ── Estado de la Flota ─────────────────────── -->
+  <div class="bg-white rounded-2xl border border-jichi-gray/50 p-5 flex flex-col">
+
+    <div class="mb-3">
+      <h2 class="text-sm font-bold text-jichi-dark">Estado Operativo de la Flota</h2>
+      <p class="text-jichi-muted text-xs mt-0.5">
+        Clasificación de contenedores según análisis de Puntos Críticos
+      </p>
+    </div>
+
+    @if (loading()) {
+      <div class="flex items-center justify-center flex-1 min-h-[240px]">
+        <div class="w-36 h-36 rounded-full border-[18px] border-jichi-gray/25 animate-pulse"></div>
+      </div>
+    } @else {
+      <apx-chart
+        [series]="donutSeries"
+        [chart]="donutChart"
+        [colors]="donutColors"
+        [labels]="donutLabels"
+        [plotOptions]="donutPlotOptions"
+        [dataLabels]="donutDataLabels"
+        [legend]="donutLegend"
+      ></apx-chart>
+    }
+
+    @if (!loading() && kpis()) {
+      <div class="mt-auto space-y-3 pt-3 border-t border-jichi-gray/50">
+
+        <!-- Críticos -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0"></span>
+            <span class="text-xs text-jichi-muted">Puntos Críticos Detectados</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-red-600 tabular-nums">
+              {{ kpis()!.ml_kmeans_contenedores_criticos | number }}
+            </span>
+            <span class="text-[10px] text-jichi-muted">
+              ({{ ((kpis()!.ml_kmeans_contenedores_criticos / 1000) * 100).toFixed(0) }}%)
+            </span>
+          </div>
+        </div>
+
+        <!-- Operativos -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-jichi-accent flex-shrink-0"></span>
+            <span class="text-xs text-jichi-muted">Contenedores Operativos</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-jichi-dark tabular-nums">
+              {{ (1000 - kpis()!.ml_kmeans_contenedores_criticos) | number }}
+            </span>
+            <span class="text-[10px] text-jichi-muted">
+              ({{ (((1000 - kpis()!.ml_kmeans_contenedores_criticos) / 1000) * 100).toFixed(0) }}%)
+            </span>
+          </div>
+        </div>
+
+        <!-- Riesgo Inminente -->
+        <div class="flex items-center justify-between pt-2 border-t border-jichi-gray/40">
+          <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0"></span>
+            <span class="text-xs text-jichi-muted font-medium">Riesgo de Desborde Inmediato</span>
+          </div>
+          <span class="text-sm font-bold text-red-600 tabular-nums">
+            {{ kpis()!.ml_arbol_riesgo_inminente | number }} cont.
+          </span>
+        </div>
+
+      </div>
+    }
+  </div>
+
+</div>

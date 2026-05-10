@@ -1,0 +1,67 @@
+<!-- Header -->
+<div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold text-jichi-dark">Mapa de Calor</h1>
+    <p class="text-jichi-muted text-sm mt-0.5">Visualización geoespacial de riesgo de desborde</p>
+  </div>
+
+  <!-- Filter toggles -->
+  @if (!loading()) {
+    <div class="flex items-center gap-3 flex-shrink-0">
+      <button (click)="toggleRisk()"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
+                     border transition-all duration-150"
+              [class.bg-red-500]="showRisk()"
+              [class.text-white]="showRisk()"
+              [class.border-red-500]="showRisk()"
+              [class.bg-white]="!showRisk()"
+              [class.text-red-400]="!showRisk()"
+              [class.border-red-200]="!showRisk()">
+        <span class="w-2 h-2 rounded-full bg-current"></span>
+        En Riesgo ({{ stats().risk }})
+      </button>
+
+      <button (click)="toggleSafe()"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
+                     border transition-all duration-150"
+              [class.bg-jichi-accent]="showSafe()"
+              [class.text-jichi-dark]="showSafe()"
+              [class.border-jichi-accent]="showSafe()"
+              [class.bg-white]="!showSafe()"
+              [class.text-jichi-muted]="!showSafe()"
+              [class.border-jichi-gray]="!showSafe()">
+        <span class="w-2 h-2 rounded-full bg-current"></span>
+        Sin Riesgo ({{ stats().safe }})
+      </button>
+
+      <span class="text-jichi-muted text-xs">Total: {{ stats().total }}</span>
+    </div>
+  }
+</div>
+
+<!-- Map card -->
+<div class="bg-white rounded-2xl border border-jichi-gray/50 overflow-hidden relative"
+     style="height: calc(100vh - 11rem)">
+
+  <!-- Loading overlay -->
+  @if (loading()) {
+    <div class="absolute inset-0 bg-jichi-base/80 z-10 flex flex-col items-center justify-center gap-3">
+      <svg class="w-8 h-8 text-jichi-accent animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+      <span class="text-jichi-muted text-sm">Cargando mapa...</span>
+    </div>
+  }
+
+  <!-- Error overlay -->
+  @if (error()) {
+    <div class="absolute inset-0 z-10 flex items-center justify-center">
+      <p class="text-red-500 text-sm">{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Leaflet map -->
+  <div id="mapa-calor" class="w-full h-full"></div>
+
+</div>
